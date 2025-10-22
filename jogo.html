@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalCare - A Triagem Caótica</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+    <style>
+        /* CSS Integrado (Visual Gaming UI / Dark Mode) */
+        
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0F172A 0%, #080D1A 100%); 
+            color: #E2E8F0;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* --------------------------------- */
+        /* EFEITO SIMBOLOS FLUTUANTES (FUNDO) */
+        /* --------------------------------- */
+        #background-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.1;
+        }
+        .symbol {
+            position: absolute;
+            color: #993BC7;
+            font-size: 80px;
+            animation: float 20s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            100% { transform: translateY(-1000px) rotate(360deg); opacity: 0.1; }
+        }
+        
+        /* --------------------------------- */
+        /* LAYOUT PRINCIPAL E CONTAINER DO JOGO */
+        /* --------------------------------- */
+        .game-container {
+            width: 95%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            user-select: none;
+            text-align: center; 
+            display: none;
+        }
+
+        /* Estilização da Logo */
+        .logo-header {
+            margin-bottom: 25px;
+        }
+        .logo-header img {
+            width: 150px; 
+            height: auto;
+            filter: 
+                drop-shadow(0 0 5px rgba(127, 255, 212, 0.6))
+                drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+            opacity: 0.95;
+        }
+
+        /* Título Principal */
+        .main-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1EC3A5; 
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(30, 195, 165, 0.5);
+        }
+
+        h1 {
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            color: #7FFFD4;
+            margin-bottom: 5px;
+        }
+
+        #timer-display {
+            font-size: clamp(3em, 8vw, 4em);
+            font-weight: 700;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        #score-display {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Área de Jogo (Foco) */
+        #game-area {
+            position: relative;
+            height: 450px;
+            width: 100%;
+            border: 3px solid #993BC7; 
+            border-radius: 10px;
+            overflow: hidden; 
+            background: rgba(0, 0, 0, 0.4);
+            cursor: crosshair;
+        }
+
+        /* Estilo dos Alvos Flutuantes */
+        .game-target {
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s, opacity 0.2s; 
+        }
+        
+        .game-target:active {
+            transform: scale(0.85);
+        }
+
+        /* Cores e Símbolos dos Alvos */
+        .critical { background-color: #1EC3A5; z-index: 30; } 
+        .coffee { background-color: #7FFFD4; z-index: 30; }   
+        .distraction { background-color: #dc3545; z-index: 30; } 
+
+        /* Mensagens de Controle */
+        .start-button-style {
+            padding: 15px 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #7FFFD4; 
+            color: #1F2B5B;
+            border: none;
+            border-radius: 50px;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+        }
+        .start-button-style:disabled {
+            background-color: #6c757d !important;
+            cursor: not-allowed;
+            color: #e2e8f0;
+        }
+
+        #result-message {
+            margin-top: 15px;
+            font-size: 1.2em;
+            min-height: 50px;
+            color: #ffc107;
+        }
+
+        /* --------------------------------- */
+        /* RANKING E OVERLAY DE INÍCIO */
+        /* --------------------------------- */
+        .overlay-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #ranking-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            text-align: left;
+            list-style-position: inside;
+        }
+        #ranking-list ol {
+            padding-left: 0;
+        }
+        #ranking-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        #name-form {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+        #player-name-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #993BC7;
+            background: #2F3B5B;
+            color: white;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        #player-name-input:disabled {
+            background: #1F2B5B;
+            border-color: #1EC3A5; 
+            color: #1EC3A5;
+            cursor: default;
+        }
+        #final-results {
+            margin-top: 20px;
+            text-align: left;
+            padding: 15px 30px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 1.1em;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #993BC7;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="background-symbols"></div>
+
+    <div id="ranking-overlay" class="overlay-screen">
+        <div class="main-title" style="margin-bottom: 20px;">VITAL CARE</div>
+        <h2 style="color: #7FFFD4;">Seja o Triagista Mais Rápido!</h2>
+        <div id="ranking-list">
+            <ul id="ranking"></ul>
+        </div>
+        <form id="name-form">
+            <input type="text" id="player-name-input" placeholder="Seu Nome/Apelido" required>
+            <button type="submit" class="start-button-style" id="start-button-overlay" style="margin-top: 15px;">COMEÇAR PLANTÃO</button>
+        </form>
+        
+        <button id="export-ranking-button" class="start-button-style" 
+                style="margin-top: 30px; background-color: #993BC7; color: white; display: none;">
+            EXPORTAR RANKING COMPLETO (CSV)
+        </button>
+    </div>
+
+    <div class="game-container">
+        
+        <div class="logo-header">
+             <img src="logo_vitalcare.png" alt="Logo VitalCare"> 
+        </div>
+        
+        <div class="main-title" style="margin-bottom: 10px;">VITAL CARE</div>
+        
+        <h1>A Triagem Caótica: Nível TCC</h1>
+        <p>20s de Plantão. CLIQUE nos Alvos de Ponto (+). Clicar no Vermelho (🛑) é PUNIÇÃO (-8 pontos).</p>
+
+        <div id="score-display">Pontos: <span id="score">0</span></div>
+        <div id="timer-display">20s</div>
+
+        <div id="game-area">
+            <button id="start-button">INICIAR PLANTÃO DE 20 SEGUNDOS</button>
+        </div>
+
+        <p id="result-message">Seu foco e velocidade definem o prêmio.</p>
+        
+        <div id="final-results" style="display: none;"></div>
+
+    </div>
+
+    <script>
+        // --- CHAVES DO LOCALSTORAGE ---
+        const RANKING_KEY = 'vitalcareRanking';
+        const PLAY_COUNTS_KEY = 'vitalcarePlayCounts';
+        const LAST_USED_NAME_KEY = 'vitalcareLastUsedName'; 
+        
+        // --- Lista de Exceção VIP (Jogadas Ilimitadas) ---
+        const VIP_USERS = ['Wydgui', 'Fefe01', 'Laurao'];
+
+        // --- VARIÁVEIS DE CONTROLE ---
+        const gameArea = document.getElementById('game-area');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer-display');
+        const startButton = document.getElementById('start-button');
+        const resultMessage = document.getElementById('result-message');
+        const finalResultsContainer = document.getElementById('final-results');
+        const backgroundSymbols = document.getElementById('background-symbols');
+        const rankingOverlay = document.getElementById('ranking-overlay');
+        const rankingListDiv = document.getElementById('ranking-list');
+        const nameForm = document.getElementById('name-form');
+        const playerNameInput = document.getElementById('player-name-input');
+        const exportButton = document.getElementById('export-ranking-button');
+        const overlayStartButton = document.getElementById('start-button-overlay');
+        
+        let score = 0;
+        let timeLeft = 0;
+        let isRunning = false;
+        let generatorInterval;
+        let timerInterval;
+
+        let criticalHits = 0;
+        let coffeeHits = 0;
+        let distractionFails = 0;
+        let currentPlayerName = 'Anônimo'; 
+        let gameID = 0;
+        
+        const MAX_PLAYS = 3; 
+        
+        // Base de DIFICULDADE
+        const GAME_DURATION = 20; 
+        const BASE_GEN_RATE = 300; 
+        const BASE_LIFESPAN = 1200; 
+        
+        // CONFIGURAÇÃO DE PONTUAÇÃO (PUNITIVA)
+        // NOVO: Distração agora tem -8 pontos e não encerra o jogo
+        const ITEM_CONFIG = [
+            { type: 'critical', icon: '🚨', points: 10, weight: 2 }, 
+            { type: 'coffee', icon: '☕', points: 3, weight: 3 },    
+            { type: 'distraction', icon: '🛑', points: -8, weight: 9 } // -8 pontos
+        ];
+
+        // --- FUNÇÕES DE RANKING E CONTADORES ---
+        
+        function loadPlayCounts() {
+            return JSON.parse(localStorage.getItem(PLAY_COUNTS_KEY)) || {};
+        }
+
+        function loadPlayCount(name) {
+            const counts = loadPlayCounts();
+            
+            if (VIP_USERS.includes(name)) {
+                return 0; 
+            }
+            return counts[name] || 0;
+        }
+
+        function incrementPlayCount(name) {
+            let counts = loadPlayCounts();
+            
+            if (!VIP_USERS.includes(name)) {
+                 counts[name] = (counts[name] || 0) + 1;
+            }
+            
+            localStorage.setItem(PLAY_COUNTS_KEY, JSON.stringify(counts));
+            return counts[name];
+        }
+
+        // NOVO: Função que carrega o ranking e FILTRA para ter APENAS o melhor score por jogador
+        function loadRanking() {
+            const rawRanking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
+            
+            const bestScoresMap = new Map();
+
+            rawRanking.forEach(entry => {
+                const name = entry.name;
+                if (!bestScoresMap.has(name) || entry.score > bestScoresMap.get(name).score) {
+                    bestScoresMap.set(name, entry);
+                }
+            });
+
+            const uniqueRanking = Array.from(bestScoresMap.values());
+            uniqueRanking.sort((a, b) => b.score - a.score);
+
+            return uniqueRanking;
+        }
+
+        function saveScore(name, score, prize, hits, misses) {
+                gameID = Date.now();
+
+                const newEntry = {
+                    id: gameID,
+                    timestamp: new Date().toLocaleString('pt-BR'),
+                    name: name,
+                    score: score,
+                    prize: prize,
+                    criticalHits: hits,
+                    distractionFails: misses,
+                    redeemed: false
+                };
+
+                // Use the shared ranking API (ranking.js) to persist and notify listeners.
+                // `addPlayer` will be attached to window by the module in `ranking.js`.
+                if (typeof window.addPlayer === 'function') {
+                    window.addPlayer(newEntry);
+                } else {
+                    // Fallback: write directly to localStorage if the module is not available yet.
+                    let rawRanking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
+                    rawRanking.push(newEntry);
+                    localStorage.setItem(RANKING_KEY, JSON.stringify(rawRanking));
+                }
+        }
+
+        function displayRanking() {
+            const ranking = loadRanking();
+            
+            let html = '<h3>🏆 Top 10 Triagens Rápidas</h3><ol>';
+            if (ranking.length === 0) {
+                 html += '<li>Nenhum score registrado ainda. Seja o primeiro!</li>';
+            } else {
+                ranking.slice(0, 10).forEach((entry) => {
+                    const status = entry.redeemed ? ' (✅ Resgatado)' : '';
+                    html += `
+                        <li><strong>${entry.name}</strong>: ${entry.score} pts ${status}</li>
+                    `;
+                });
+            }
+            html += '</ol>';
+            rankingListDiv.innerHTML = html;
+            
+            checkAndSetStartButton();
+
+            rankingOverlay.style.display = 'flex';
+            document.querySelector('.game-container').style.display = 'none';
+        }
+        
+        function checkAndSetStartButton() {
+            const lockedName = localStorage.getItem(LAST_USED_NAME_KEY);
+            let nameForCheck = playerNameInput.value.trim().toLowerCase();
+
+            if (lockedName) {
+                playerNameInput.value = lockedName;
+                playerNameInput.disabled = true;
+                nameForCheck = lockedName;
+            } else {
+                playerNameInput.disabled = false;
+            }
+
+            const count = loadPlayCount(nameForCheck);
+            const remaining = MAX_PLAYS - count;
+            const isVIP = VIP_USERS.includes(nameForCheck);
+
+            if (!isVIP && remaining <= 0) {
+                 overlayStartButton.textContent = `LIMITE ATINGIDO (${MAX_PLAYS} JOGADAS)`;
+                 overlayStartButton.disabled = true;
+            } else {
+                 let statusText = isVIP ? `COMEÇAR PLANTÃO (ILIMITADO)` : `COMEÇAR PLANTÃO (${remaining} de ${MAX_PLAYS})`;
+                 
+                 if (lockedName && !isVIP) {
+                     statusText = `REINICIAR PLANTÃO (${remaining} de ${MAX_PLAYS})`;
+                 }
+
+                 overlayStartButton.textContent = statusText;
+                 overlayStartButton.disabled = false;
+                 if (lockedName) {
+                    playerNameInput.placeholder = `Travado: ${lockedName}`;
+                 }
+            }
+        }
+        
+        function exportRankingToCSV() {
+            const ranking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
+            
+            if (ranking.length === 0) {
+                alert('Não há dados para exportar.');
+                return;
+            }
+
+            const headers = ['ID', 'Data/Hora', 'Nome', 'Score', 'Prêmio', 'Alertas Coletados', 'Erros/Distrações', 'Resgatado'];
+            let csv = headers.join(';') + '\n'; 
+
+            ranking.forEach(entry => {
+                const row = [
+                    entry.id,
+                    entry.timestamp,
+                    `"${entry.name}"`, 
+                    entry.score,
+                    `"${entry.prize}"`,
+                    entry.criticalHits,
+                    entry.distractionFails,
+                    entry.redeemed ? 'Sim' : 'Não'
+                ].join(';');
+                csv += row + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Ranking_VitalCare_RAW_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert(`Sucesso! ${ranking.length} registros (raw) foram exportados para o arquivo CSV.`);
+        }
+        
+        // --- FUNÇÕES DE JOGO (LÓGICA) ---
+        
+        function getDifficultyFactors() {
+            const elapsed = GAME_DURATION - timeLeft;
+            let tier = 0;
+            if (elapsed >= 15) tier = 3; 
+            else if (elapsed >= 10) tier = 2; 
+            else if (elapsed >= 5) tier = 1; 
+            
+            const rateFactor = [1.0, 0.8, 0.6, 0.4]; 
+            const lifespanFactor = [1.0, 0.8, 0.6, 0.4]; 
+
+            return {
+                newRate: BASE_GEN_RATE * rateFactor[tier],
+                newLifespan: BASE_LIFESPAN * lifespanFactor[tier]
+            };
+        }
+        
+        function adjustGeneratorSpeed() {
+            const factors = getDifficultyFactors();
+            
+            clearInterval(generatorInterval); 
+            
+            const newRate = factors.newRate;
+            
+            generatorInterval = setInterval(createTarget, newRate);
+        }
+
+        function createTarget() {
+            if (!isRunning) return;
+
+            const itemConfig = getRandomItemType();
+            const target = document.createElement('div');
+            
+            const factors = getDifficultyFactors();
+            const lifespan = factors.newLifespan; 
+            
+            target.className = `game-target ${itemConfig.type}`;
+            target.textContent = itemConfig.type === 'distraction' ? '🛑' : itemConfig.icon;
+            
+            const maxX = gameArea.clientWidth - 70;
+            const maxY = gameArea.clientHeight - 70;
+            target.style.left = `${Math.random() * maxX}px`;
+            target.style.top = `${Math.random() * maxY}px`;
+            
+            target.onclick = () => {
+                if (!isRunning) return;
+                
+                // NOVO: Lógica de Distração (Punição de Pontos)
+                if (itemConfig.type === 'distraction') {
+                    distractionFails++;
+                    updateScore(itemConfig.points, itemConfig.type); // Aplica -8 pontos
+                    resultMessage.textContent = `🛑 -8 PONTOS! Mantenha o Foco!`;
+                    target.remove();
+                    return; 
+                }
+
+                // Lógica de Pontuação normal
+                updateScore(itemConfig.points, itemConfig.type);
+                resultMessage.textContent = `${itemConfig.icon} +${itemConfig.points} PONTOS!`;
+                target.remove();
+            };
+
+            gameArea.appendChild(target);
+
+            target.style.animation = `pulseFade ${lifespan / 1000}s ease-in-out forwards`;
+
+            setTimeout(() => {
+                target.remove();
+            }, lifespan);
+        }
+        
+        function updateScore(points, type) {
+            score += points;
+            scoreDisplay.textContent = score;
+
+            if (type === 'critical') criticalHits++;
+            if (type === 'coffee') coffeeHits++;
+        }
+
+        function getRandomItemType() {
+            const totalWeight = ITEM_CONFIG.reduce((sum, item) => sum + item.weight, 0);
+            let randomNum = Math.floor(Math.random() * totalWeight);
+            
+            for (const item of ITEM_CONFIG) {
+                if (randomNum < item.weight) {
+                    return item;
+                }
+                randomNum -= item.weight;
+            }
+        }
+        
+        function startGame() {
+            if (isRunning) return;
+            
+            currentPlayerName = playerNameInput.value.trim();
+
+            if (!VIP_USERS.includes(currentPlayerName) && loadPlayCount(currentPlayerName) >= MAX_PLAYS) {
+                 alert(`Desculpe, ${currentPlayerName}! Você já atingiu o limite de ${MAX_PLAYS} jogadas.`);
+                 displayRanking();
+                 return;
+            }
+
+            // Reseta estatísticas
+            score = 0;
+            criticalHits = 0;
+            coffeeHits = 0;
+            distractionFails = 0;
+            
+            rankingOverlay.style.display = 'none';
+            document.querySelector('.game-container').style.display = 'block';
+
+            // Inicia o Countdown de 5 segundos
+            let countdown = 5;
+            resultMessage.textContent = `PREPARAR, ${currentPlayerName.toUpperCase()}! COMEÇA EM ${countdown}...`;
+            startButton.style.display = 'none';
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    resultMessage.textContent = `PREPARAR! COMEÇA EM ${countdown}...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    gameStartCore(); 
+                }
+            }, 1000);
+        }
+        
+        function gameStartCore() {
+            timeLeft = GAME_DURATION;
+            isRunning = true;
+            scoreDisplay.textContent = score;
+            timerDisplay.textContent = timeLeft + 's';
+            finalResultsContainer.style.display = 'none';
+
+            const statusMessage = VIP_USERS.includes(currentPlayerName) ? 
+                          `PLANTÃO ILIMITADO, ${currentPlayerName.toUpperCase()}!` :
+                          `FOCO MÁXIMO, ${currentPlayerName.toUpperCase()}! CUIDADO COM O VERMELHO.`; // Mensagem ajustada
+            resultMessage.textContent = statusMessage;
+            
+            clearInterval(generatorInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft + 's';
+                
+                adjustGeneratorSpeed(); 
+
+                if (timeLeft <= 0) {
+                    // Jogo SEMPRE termina por tempo
+                    endGame(true, '✅ FIM DO PLANTÃO! Seu tempo acabou.');
+                }
+            }, 1000);
+            
+            adjustGeneratorSpeed();
+        }
+
+
+        function classifyPrize(finalScore) {
+            if (finalScore >= 150) return 'Exclusivo (Cordão)';
+            if (finalScore >= 90) return 'Médio (Chaveiro Acrílico Azul)';
+            if (finalScore >= 60) return 'Simples (Chaveiro MDF)';
+            return 'Super Simples (Adesivo e Bala)'; 
+        }
+
+        function endGame(success, message) {
+            // Lógica de EndGame (Sempre sucesso = true agora, pois Distraction não encerra)
+            isRunning = false;
+            clearInterval(generatorInterval);
+            clearInterval(timerInterval);
+            
+            document.querySelectorAll('.game-target').forEach(t => t.remove());
+
+            let finalScore = score;
+            let prize = classifyPrize(finalScore);
+            
+            // Salva o score e incrementa o contador de jogadas
+            saveScore(currentPlayerName, finalScore, prize, criticalHits, distractionFails);
+            const newPlayCount = incrementPlayCount(currentPlayerName); 
+
+            // 1. Monta a Mensagem
+            let playLimitStatus = `(Jogada ${newPlayCount} de ${MAX_PLAYS})`;
+            if (VIP_USERS.includes(currentPlayerName)) {
+                playLimitStatus = '(JOGADOR VIP - ILIMITADO)';
+            } else if (newPlayCount >= MAX_PLAYS) {
+                playLimitStatus = ' (LIMITE MÁXIMO ATINGIDO!)';
+            }
+            
+            // A mensagem de EndGame não precisa mais verificar 'success' baseado na distração
+            message = `✅ FIM DO PLANTÃO! Seu score final é ${finalScore}. ${playLimitStatus}`;
+
+
+            // 2. Montagem da Tela Final Detalhada
+            finalResultsContainer.innerHTML = `
+                <p style="font-size: 1.5em; color: #7FFFD4; font-weight: 700;">RESULTADOS DA TRIAGEM:</p>
+                <p><strong>Status:</strong> <span style="color: #1EC3A5;">PLANTÃO CONCLUÍDO</span></p>
+                <p><strong>Score Final:</strong> <span style="color: #ffc107;">${finalScore}</span></p>
+                <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 10px 0;">
+                <p><strong>🚨 Alertas Críticos (x10):</strong> ${criticalHits}</p>
+                <p><strong>☕ Cafés de Sobrevida (x3):</strong> ${coffeeHits}</p>
+                <p><strong>🛑 Punições/Erros (-8 pts):</strong> ${distractionFails}</p>
+                <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 10px 0;">
+                <p style="font-size: 1.4em; color: #993BC7;">PRÊMIO GANHO: ${prize}</p>
+                <button id="checkout-button" class="start-button-style" data-id="${gameID}" 
+                        style="background-color: #1EC3A5; margin-top: 15px;">RESGATAR PRÊMIO</button>
+            `;
+            finalResultsContainer.style.display = 'block';
+            resultMessage.textContent = message;
+            
+            startButton.textContent = 'VOLTAR AO RANKING';
+            startButton.onclick = displayRanking; 
+            startButton.style.display = 'block';
+
+            document.getElementById('checkout-button').onclick = handleCheckout;
+        }
+        
+        function handleCheckout() {
+            const token = document.getElementById('checkout-button').dataset.id;
+            const password = prompt('Digite a senha da equipe (vitalcare2025) para confirmar o resgate do prêmio:'); 
+            
+            if (password === 'vitalcare2025') { 
+                let ranking = JSON.parse(localStorage.getItem(RANKING_KEY)) || []; 
+                const entryIndex = ranking.findIndex(e => String(e.id) === token);
+                
+                if (entryIndex !== -1 && !ranking[entryIndex].redeemed) {
+                    ranking[entryIndex].redeemed = true;
+                    localStorage.setItem(RANKING_KEY, JSON.stringify(ranking));
+                    alert(`Prêmio de ${ranking[entryIndex].prize} resgatado com sucesso para ${ranking[entryIndex].name}!`);
+                    displayRanking(); 
+                } else {
+                    alert('Prêmio já resgatado ou Token inválido.');
+                }
+            } else {
+                alert('Senha incorreta.');
+            }
+        }
+
+        function setupBackgroundSymbols() {
+            const symbols = ['🎮', '🩺', '⚡', '💊', '💙', '⚙️', '🎯'];
+            for (let i = 0; i < 20; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                symbol.style.left = `${Math.random() * 100}vw`;
+                symbol.style.top = `${Math.random() * 100}vh`;
+                symbol.style.animationDelay = `${Math.random() * -20}s`;
+                backgroundSymbols.appendChild(symbol);
+            }
+        }
+
+
+        // --- INICIALIZAÇÃO E EVENT HANDLERS ---
+        
+        nameForm.onsubmit = (e) => {
+            e.preventDefault();
+            
+            const name = playerNameInput.value.trim();
+            const lockedName = localStorage.getItem(LAST_USED_NAME_KEY);
+            
+            if (name.length < 3) {
+                 alert("Por favor, insira um nome válido com pelo menos 3 caracteres.");
+                 return;
+            }
+
+            if (!lockedName) {
+                const allPlayCounts = loadPlayCounts();
+                if (allPlayCounts[name] && !VIP_USERS.includes(name)) {
+                    alert(`O nome "${name}" já foi utilizado por outro jogador. Por favor, escolha um nome único para o ranking!`);
+                    return; 
+                }
+                localStorage.setItem(LAST_USED_NAME_KEY, name);
+                
+            } else if (name !== lockedName) {
+                alert(`Este computador está travado para o nome: ${lockedName}. Apenas ${lockedName} pode jogar aqui.`);
+                playerNameInput.value = lockedName;
+                checkAndSetStartButton();
+                return;
+            }
+
+            if (!VIP_USERS.includes(name) && loadPlayCount(name) >= MAX_PLAYS) {
+                 alert(`Desculpe, ${name}! Você já atingiu o limite de ${MAX_PLAYS} jogadas.`);
+                 displayRanking();
+                 return;
+            }
+            
+            currentPlayerName = name;
+            
+            rankingOverlay.style.display = 'none';
+            document.querySelector('.game-container').style.display = 'block';
+            startGame(); 
+        };
+        
+        playerNameInput.addEventListener('input', checkAndSetStartButton);
+        exportButton.onclick = exportRankingToCSV;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setupBackgroundSymbols();
+            checkAndSetStartButton(); 
+            displayRanking();
+        });
+    </script>
+    <script type="module">
+  import { addPlayer, listenRanking } from "./ranking.js";
+
+  const rankingList = document.getElementById("ranking");
+
+  // Atualiza o ranking em tempo real
+  listenRanking((players) => {
+    rankingList.innerHTML = players
+      .map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts</li>`)
+      .join("");
+  });
+
+  // Exemplo de adição manual (você pode adaptar)
+  // addPlayer("Guilherme", 120);
+</script>
+</body>
+</html>
