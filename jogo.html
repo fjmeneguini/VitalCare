@@ -10,241 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 
-    <style>
-        /* CSS Integrado (Visual Gaming UI / Dark Mode) */
-        
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0F172A 0%, #080D1A 100%); 
-            color: #E2E8F0;
-            padding: 20px;
-            position: relative;
-        }
-
-        /* --------------------------------- */
-        /* EFEITO SIMBOLOS FLUTUANTES (FUNDO) */
-        /* --------------------------------- */
-        #background-symbols {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; 
-            pointer-events: none;
-            overflow: hidden;
-            opacity: 0.1;
-        }
-        .symbol {
-            position: absolute;
-            color: #993BC7;
-            font-size: 80px;
-            animation: float 20s infinite linear;
-        }
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
-            100% { transform: translateY(-1000px) rotate(360deg); opacity: 0.1; }
-        }
-        
-        /* --------------------------------- */
-        /* LAYOUT PRINCIPAL E CONTAINER DO JOGO */
-        /* --------------------------------- */
-        .game-container {
-            width: 95%;
-            max-width: 800px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(5px);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            user-select: none;
-            text-align: center; 
-            display: none;
-        }
-
-        /* Estilização da Logo */
-        .logo-header {
-            margin-bottom: 25px;
-        }
-        .logo-header img {
-            width: 150px; 
-            height: auto;
-            filter: 
-                drop-shadow(0 0 5px rgba(127, 255, 212, 0.6))
-                drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
-            opacity: 0.95;
-        }
-
-        /* Título Principal */
-        .main-title {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: #1EC3A5; 
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(30, 195, 165, 0.5);
-        }
-
-        h1 {
-            font-size: clamp(1.8em, 5vw, 2.5em);
-            color: #7FFFD4;
-            margin-bottom: 5px;
-        }
-
-        #timer-display {
-            font-size: clamp(3em, 8vw, 4em);
-            font-weight: 700;
-            color: #ffc107;
-            margin-bottom: 15px;
-        }
-
-        #score-display {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        /* Área de Jogo (Foco) */
-        #game-area {
-            position: relative;
-            height: 450px;
-            width: 100%;
-            border: 3px solid #993BC7; 
-            border-radius: 10px;
-            overflow: hidden; 
-            background: rgba(0, 0, 0, 0.4);
-            cursor: crosshair;
-        }
-
-        /* Estilo dos Alvos Flutuantes */
-        .game-target {
-            position: absolute;
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5em;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
-            transition: transform 0.1s, opacity 0.2s; 
-        }
-        
-        .game-target:active {
-            transform: scale(0.85);
-        }
-
-        /* Cores e Símbolos dos Alvos */
-        .critical { background-color: #1EC3A5; z-index: 30; } 
-        .coffee { background-color: #7FFFD4; z-index: 30; }   
-        .distraction { background-color: #dc3545; z-index: 30; } 
-
-        /* Mensagens de Controle */
-        .start-button-style {
-            padding: 15px 30px;
-            font-size: 1.3em;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #7FFFD4; 
-            color: #1F2B5B;
-            border: none;
-            border-radius: 50px;
-            transition: background-color 0.3s;
-            text-transform: uppercase;
-        }
-        .start-button-style:disabled {
-            background-color: #6c757d !important;
-            cursor: not-allowed;
-            color: #e2e8f0;
-        }
-
-        #result-message {
-            margin-top: 15px;
-            font-size: 1.2em;
-            min-height: 50px;
-            color: #ffc107;
-        }
-
-        /* --------------------------------- */
-        /* RANKING E OVERLAY DE INÍCIO */
-        /* --------------------------------- */
-        .overlay-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        #ranking-list {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
-            text-align: left;
-            list-style-position: inside;
-        }
-        #ranking-list ol {
-            padding-left: 0;
-        }
-        #ranking-list li {
-            padding: 5px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-        #name-form {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
-            margin-top: 20px;
-        }
-        #player-name-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid #993BC7;
-            background: #2F3B5B;
-            color: white;
-            font-size: 1.1em;
-            box-sizing: border-box;
-            transition: border-color 0.3s, background 0.3s;
-        }
-        #player-name-input:disabled {
-            background: #1F2B5B;
-            border-color: #1EC3A5; 
-            color: #1EC3A5;
-            cursor: default;
-        }
-        #final-results {
-            margin-top: 20px;
-            text-align: left;
-            padding: 15px 30px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            font-size: 1.1em;
-            width: 90%;
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid #993BC7;
-        }
-
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     
@@ -285,6 +51,11 @@
             <button id="start-button">INICIAR PLANTÃO DE 20 SEGUNDOS</button>
         </div>
 
+        <div id="score-feedback" aria-live="polite">
+            <div id="last-hit" aria-hidden="true"></div>
+            <div id="running-total">0 pts</div>
+        </div>
+
         <p id="result-message">Seu foco e velocidade definem o prêmio.</p>
         
         <div id="final-results" style="display: none;"></div>
@@ -292,15 +63,27 @@
     </div>
 
     <script>
-        // --- CHAVES DO LOCALSTORAGE ---
+        /*
+          Script principal do jogo - controles, persistência local e integração com ranking remoto.
+          Descrições em português foram adicionadas para facilitar manutenção.
+
+          Responsabilidades principais:
+          - Gerenciar fluxo do jogo (iniciar, temporizador, gerar alvos, finalizar)
+          - Controlar pontuação, feedback visual e sonoro (Web Audio sintetizado)
+          - Persistir scores localmente e enviar para ranking remoto via `ranking.js` (quando disponível)
+          - Aplicar limite de jogadas por nome (kiosk mode) e exceções VIP
+        */
+
+        // --- CHAVES DO LOCALSTORAGE --- (armazenamento local para fallback)
         const RANKING_KEY = 'vitalcareRanking';
         const PLAY_COUNTS_KEY = 'vitalcarePlayCounts';
         const LAST_USED_NAME_KEY = 'vitalcareLastUsedName'; 
         
         // --- Lista de Exceção VIP (Jogadas Ilimitadas) ---
+        // Nomes aqui são tratados como exceções: os usuários listados não têm limite de jogadas locais
         const VIP_USERS = ['Wydgui', 'Fefe01', 'Laurao'];
 
-        // --- VARIÁVEIS DE CONTROLE ---
+        // --- VARIÁVEIS DE CONTROLE DO DOM E DO JOGO ---
         const gameArea = document.getElementById('game-area');
         const scoreDisplay = document.getElementById('score');
         const timerDisplay = document.getElementById('timer-display');
@@ -315,6 +98,7 @@
         const exportButton = document.getElementById('export-ranking-button');
         const overlayStartButton = document.getElementById('start-button-overlay');
         
+        // Estado do jogo
         let score = 0;
         let timeLeft = 0;
         let isRunning = false;
@@ -327,51 +111,195 @@
         let currentPlayerName = 'Anônimo'; 
         let gameID = 0;
         
+        // Limite local de jogadas por nome (kiosk mode)
         const MAX_PLAYS = 3; 
         
-        // Base de DIFICULDADE
+        // Configurações de jogo: duração, taxa de geração e tempo de vida dos alvos
         const GAME_DURATION = 20; 
         const BASE_GEN_RATE = 300; 
         const BASE_LIFESPAN = 1200; 
         
         // CONFIGURAÇÃO DE PONTUAÇÃO (PUNITIVA)
-        // NOVO: Distração agora tem -8 pontos e não encerra o jogo
+        // Distração (🛑) dá -8 pontos, mas não encerra mais o jogo.
         const ITEM_CONFIG = [
             { type: 'critical', icon: '🚨', points: 10, weight: 2 }, 
             { type: 'coffee', icon: '☕', points: 3, weight: 3 },    
             { type: 'distraction', icon: '🛑', points: -8, weight: 9 } // -8 pontos
         ];
 
-        // --- FUNÇÕES DE RANKING E CONTADORES ---
-        
+        // -------------------------
+        // SONS (Web Audio API - sintetizados)
+        // Descrições: funções abaixo criam um AudioContext, tentam retomar quando necessário
+        // e implementam um pequeno debounce para evitar sobrecarga quando muitos eventos disparam.
+        // -------------------------
+        let audioCtx = null;
+        let audioResumeRetryTimer = null;
+        const SOUND_MIN_INTERVAL = 80; // ms entre execuções do mesmo som para evitar sobrecarga
+        let lastPositivePlay = 0;
+        let lastNegativePlay = 0;
+
+        // Garante que haja um AudioContext válido e tenta 'resume' se estiver suspenso.
+        function ensureAudioCtx() {
+            if (!audioCtx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return null;
+                audioCtx = new AC();
+            }
+            // Tenta retomar se estiver suspenso; faz algumas tentativas espaçadas.
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(()=>{});
+                if (!audioResumeRetryTimer) {
+                    let attempts = 0;
+                    audioResumeRetryTimer = setInterval(() => {
+                        attempts++;
+                        if (!audioCtx) return;
+                        if (audioCtx.state === 'running' || attempts > 6) {
+                            clearInterval(audioResumeRetryTimer);
+                            audioResumeRetryTimer = null;
+                            return;
+                        }
+                        audioCtx.resume().catch(()=>{});
+                    }, 80);
+                }
+            }
+            return audioCtx;
+        }
+
+        // Som positivo sintetizado (dois osciladores em Sine)
+        function playPositiveSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const nowMs = Date.now();
+            if (nowMs - lastPositivePlay < SOUND_MIN_INTERVAL) return; // debounce
+            lastPositivePlay = nowMs;
+            console.log('[sound] playPositiveSound');
+            const now = ctx.currentTime;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0, now);
+            g.gain.linearRampToValueAtTime(0.12, now + 0.005);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            g.connect(ctx.destination);
+
+            const o1 = ctx.createOscillator();
+            o1.type = 'sine';
+            o1.frequency.setValueAtTime(880, now);
+            o1.connect(g);
+
+            const o2 = ctx.createOscillator();
+            o2.type = 'sine';
+            o2.frequency.setValueAtTime(660, now);
+            const g2 = ctx.createGain();
+            g2.gain.setValueAtTime(0.06, now);
+            g2.connect(ctx.destination);
+            o2.connect(g2);
+
+            o1.start(now); o2.start(now);
+            o1.stop(now + 0.18); o2.stop(now + 0.18);
+        }
+
+        // Som negativo sintetizado (sawtooth decrescente)
+        function playNegativeSound() {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const nowMs = Date.now();
+            if (nowMs - lastNegativePlay < SOUND_MIN_INTERVAL) return; // debounce
+            lastNegativePlay = nowMs;
+            console.log('[sound] playNegativeSound');
+            const now = ctx.currentTime;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.12, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+            g.connect(ctx.destination);
+
+            const o = ctx.createOscillator();
+            o.type = 'sawtooth';
+            o.frequency.setValueAtTime(320, now);
+            o.frequency.exponentialRampToValueAtTime(130, now + 0.28);
+            o.connect(g);
+            o.start(now);
+            o.stop(now + 0.28);
+        }
+
+        // Feedback visual de acertos/erros mostrado abaixo da área do jogo
+        let runningTotal = 0;
+        const lastHitEl = document.getElementById('last-hit');
+        const runningTotalEl = document.getElementById('running-total');
+
+        // Mostra o último delta de pontos (+10, -8) e atualiza o total em execução
+        function showHitFeedback(delta, icon) {
+            const prefix = delta > 0 ? `+${delta}` : `${delta}`;
+            lastHitEl.textContent = `${icon || ''} ${prefix} PONTOS`;
+            lastHitEl.classList.remove('hit-pop');
+            void lastHitEl.offsetWidth; // força reflow para reiniciar animação
+            lastHitEl.classList.add('hit-pop');
+
+            runningTotal += delta;
+            runningTotalEl.textContent = `${runningTotal} pts`;
+        }
+
+        // Tenta desbloquear o AudioContext no primeiro gesto do usuário (pointerdown ou keydown)
+        function unlockAudioOnFirstGesture() {
+            function _unlock() {
+                ensureAudioCtx();
+                window.removeEventListener('pointerdown', _unlock);
+                window.removeEventListener('keydown', _unlock);
+                console.log('[sound] audio unlocked by user gesture');
+            }
+            window.addEventListener('pointerdown', _unlock, { once: true });
+            window.addEventListener('keydown', _unlock, { once: true });
+        }
+
+        // Inicializa listener para desbloquear áudio quando usuário interagir
+        unlockAudioOnFirstGesture();
+
+        // --- IN-GAME CTA ELEMENT (botão centralizado para voltar ao ranking durante/apos jogo) ---
+        const inGameCta = document.createElement('div');
+        inGameCta.className = 'in-game-cta';
+        inGameCta.innerHTML = `<button id="in-game-return-ranking" class="start-button-style" style="background:#993BC7; color:white">VOLTAR AO RANKING</button>`;
+        gameArea.appendChild(inGameCta);
+        const inGameReturnButton = inGameCta.querySelector('#in-game-return-ranking');
+        inGameReturnButton.addEventListener('click', () => {
+            displayRanking();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // --- FUNÇÕES DE RANKING E CONTADORES (local + integração remota) ---
+        // Notas: nomes são normalizados para chave (lowercase+trim) para agrupar jogadas por pessoa.
         function loadPlayCounts() {
             return JSON.parse(localStorage.getItem(PLAY_COUNTS_KEY)) || {};
         }
 
+        // Gera chave normalizada a partir do nome para contagem case-insensitive
+        function normalizeNameKey(name) {
+            return (name || '').trim().toLowerCase();
+        }
+
+        // Retorna quantas jogadas esse nome já consumiu localmente (VIP tem 0)
         function loadPlayCount(name) {
             const counts = loadPlayCounts();
-            
+            const key = normalizeNameKey(name);
             if (VIP_USERS.includes(name)) {
-                return 0; 
+                return 0;
             }
-            return counts[name] || 0;
+            return counts[key] || 0;
         }
 
+        // Incrementa e persiste contador de jogadas para o nome normalizado
         function incrementPlayCount(name) {
             let counts = loadPlayCounts();
-            
+            const key = normalizeNameKey(name);
+
             if (!VIP_USERS.includes(name)) {
-                 counts[name] = (counts[name] || 0) + 1;
+                 counts[key] = (counts[key] || 0) + 1;
             }
-            
+
             localStorage.setItem(PLAY_COUNTS_KEY, JSON.stringify(counts));
-            return counts[name];
+            return counts[key];
         }
 
-        // NOVO: Função que carrega o ranking e FILTRA para ter APENAS o melhor score por jogador
+        // Carrega ranking local e reduz para apenas o melhor score por jogador
         function loadRanking() {
             const rawRanking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
-            
             const bestScoresMap = new Map();
 
             rawRanking.forEach(entry => {
@@ -387,6 +315,7 @@
             return uniqueRanking;
         }
 
+        // Prepara objeto de entrada e tenta enviar ao módulo de ranking remoto; se indisponível, grava localmente
         function saveScore(name, score, prize, hits, misses) {
                 gameID = Date.now();
 
@@ -401,26 +330,27 @@
                     redeemed: false
                 };
 
-                // Use the shared ranking API (ranking.js) to persist and notify listeners.
-                // `addPlayer` will be attached to window by the module in `ranking.js`.
+                // Usa API compartilhada (ranking.js) quando disponível
                 if (typeof window.addPlayer === 'function') {
                     window.addPlayer(newEntry);
                 } else {
-                    // Fallback: write directly to localStorage if the module is not available yet.
+                    // Fallback para localStorage
                     let rawRanking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
                     rawRanking.push(newEntry);
                     localStorage.setItem(RANKING_KEY, JSON.stringify(rawRanking));
                 }
         }
 
+        // Exibe overlay de ranking. Preenche Top 10 local e área "Ranking Global" com dados remotos quando disponíveis.
         function displayRanking() {
-            const ranking = loadRanking();
-            
+            const localRanking = loadRanking();
+            const remoteCached = (window.getCachedRanking && typeof window.getCachedRanking === 'function') ? window.getCachedRanking() : null;
+
             let html = '<h3>🏆 Top 10 Triagens Rápidas</h3><ol>';
-            if (ranking.length === 0) {
-                 html += '<li>Nenhum score registrado ainda. Seja o primeiro!</li>';
+            if (localRanking.length === 0) {
+                html += '<li id="local-empty-message">Nenhum score registrado ainda. Seja o primeiro!</li>';
             } else {
-                ranking.slice(0, 10).forEach((entry) => {
+                localRanking.slice(0, 10).forEach((entry) => {
                     const status = entry.redeemed ? ' (✅ Resgatado)' : '';
                     html += `
                         <li><strong>${entry.name}</strong>: ${entry.score} pts ${status}</li>
@@ -428,48 +358,101 @@
                 });
             }
             html += '</ol>';
-            rankingListDiv.innerHTML = html;
+
+            // Área reservada para ranking remoto (atualizada por listenRanking)
+            rankingListDiv.innerHTML = html + `
+                <div id="remote-ranking" style="margin-top:12px;">
+                    <h4 style="margin:0 0 8px 0;">🌐 Ranking Global</h4>
+                    <ul id="ranking"></ul>
+                </div>
+            `;
+
+            // Se tivermos cache remoto, renderize imediatamente para reduzir percepção de latência
+            try {
+                if (remoteCached && remoteCached.length > 0) {
+                    const remoteListEl = document.getElementById('ranking');
+                    if (remoteListEl) {
+                        remoteListEl.innerHTML = (remoteCached || []).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join('');
+                        const localEmpty = document.getElementById('local-empty-message');
+                        if (localEmpty) localEmpty.style.display = 'none';
+                    }
+                }
+            } catch (e) { console.warn('failed to render cached remote ranking', e); }
+
+            // Anexa listener remoto se o módulo já estiver carregado; caso contrário, poll e anexa quando disponível
+            try {
+                if (!window._rankingListenerAttached && window.listenRanking && typeof window.listenRanking === 'function') {
+                    window._rankingListenerAttached = true;
+                    window.listenRanking((players) => {
+                        const liveList = document.getElementById("ranking");
+                        if (!liveList) return;
+                        liveList.innerHTML = (players || []).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
+                        const localEmpty = document.getElementById('local-empty-message');
+                        if (localEmpty) {
+                            if (players && players.length > 0) localEmpty.style.display = 'none';
+                            else localEmpty.style.display = '';
+                        }
+                    });
+                } else if (!window._rankingListenerAttached) {
+                    // Poll curto para anexar listener quando o módulo estiver pronto
+                    if (!window._rankingAttachPoll) {
+                        let attempts = 0;
+                        window._rankingAttachPoll = setInterval(() => {
+                            attempts++;
+                            if (window.listenRanking && typeof window.listenRanking === 'function') {
+                                clearInterval(window._rankingAttachPoll);
+                                window._rankingAttachPoll = null;
+                                try {
+                                    window._rankingListenerAttached = true;
+                                    window.listenRanking((players) => {
+                                        const liveList = document.getElementById("ranking");
+                                        if (!liveList) return;
+                                        liveList.innerHTML = (players || []).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
+                                        const localEmpty = document.getElementById('local-empty-message');
+                                        if (localEmpty) {
+                                            if (players && players.length > 0) localEmpty.style.display = 'none';
+                                            else localEmpty.style.display = '';
+                                        }
+                                    });
+                                } catch (e) { console.warn('failed to attach remote ranking listener after poll:', e); }
+                            } else if (attempts > 20) { // para após ~4 segundos
+                                clearInterval(window._rankingAttachPoll);
+                                window._rankingAttachPoll = null;
+                            }
+                        }, 200);
+                    }
+                }
+            } catch (e) { console.warn('failed to attach remote ranking listener:', e); }
             
             checkAndSetStartButton();
 
             rankingOverlay.style.display = 'flex';
             document.querySelector('.game-container').style.display = 'none';
+            // oculta CTA in-game quando o overlay estiver visível
+            inGameCta.style.display = 'none';
         }
         
+        // Atualiza texto/estado do botão de iniciar no overlay dependendo do nome e limite
         function checkAndSetStartButton() {
-            const lockedName = localStorage.getItem(LAST_USED_NAME_KEY);
-            let nameForCheck = playerNameInput.value.trim().toLowerCase();
+            const rawName = playerNameInput.value.trim();
+            const nameForCheck = normalizeNameKey(rawName);
 
-            if (lockedName) {
-                playerNameInput.value = lockedName;
-                playerNameInput.disabled = true;
-                nameForCheck = lockedName;
-            } else {
-                playerNameInput.disabled = false;
-            }
-
-            const count = loadPlayCount(nameForCheck);
+            // Verifica VIP de forma case-insensitive
+            const isVIP = VIP_USERS.map(n => n.toLowerCase()).includes(nameForCheck);
+            const count = loadPlayCount(rawName); // loadPlayCount já normaliza internamente
             const remaining = MAX_PLAYS - count;
-            const isVIP = VIP_USERS.includes(nameForCheck);
 
             if (!isVIP && remaining <= 0) {
                  overlayStartButton.textContent = `LIMITE ATINGIDO (${MAX_PLAYS} JOGADAS)`;
                  overlayStartButton.disabled = true;
             } else {
                  let statusText = isVIP ? `COMEÇAR PLANTÃO (ILIMITADO)` : `COMEÇAR PLANTÃO (${remaining} de ${MAX_PLAYS})`;
-                 
-                 if (lockedName && !isVIP) {
-                     statusText = `REINICIAR PLANTÃO (${remaining} de ${MAX_PLAYS})`;
-                 }
-
                  overlayStartButton.textContent = statusText;
                  overlayStartButton.disabled = false;
-                 if (lockedName) {
-                    playerNameInput.placeholder = `Travado: ${lockedName}`;
-                 }
             }
         }
         
+        // Exporta dados brutos do ranking local para CSV (uso administrativo)
         function exportRankingToCSV() {
             const ranking = JSON.parse(localStorage.getItem(RANKING_KEY)) || [];
             
@@ -510,7 +493,7 @@
         }
         
         // --- FUNÇÕES DE JOGO (LÓGICA) ---
-        
+        // Determina fatores de dificuldade baseado no tempo restante
         function getDifficultyFactors() {
             const elapsed = GAME_DURATION - timeLeft;
             let tier = 0;
@@ -561,14 +544,17 @@
                 if (itemConfig.type === 'distraction') {
                     distractionFails++;
                     updateScore(itemConfig.points, itemConfig.type); // Aplica -8 pontos
-                    resultMessage.textContent = `🛑 -8 PONTOS! Mantenha o Foco!`;
+                    playNegativeSound();
+                    showHitFeedback(itemConfig.points, '🛑');
                     target.remove();
                     return; 
                 }
 
                 // Lógica de Pontuação normal
                 updateScore(itemConfig.points, itemConfig.type);
-                resultMessage.textContent = `${itemConfig.icon} +${itemConfig.points} PONTOS!`;
+                // play positive sound for rewards
+                playPositiveSound();
+                showHitFeedback(itemConfig.points, itemConfig.icon);
                 target.remove();
             };
 
@@ -620,6 +606,8 @@
             
             rankingOverlay.style.display = 'none';
             document.querySelector('.game-container').style.display = 'block';
+            // hide in-game CTA while playing
+            inGameCta.style.display = 'none';
 
             // Inicia o Countdown de 5 segundos
             let countdown = 5;
@@ -718,11 +706,12 @@
             finalResultsContainer.style.display = 'block';
             resultMessage.textContent = message;
             
-            startButton.textContent = 'VOLTAR AO RANKING';
-            startButton.onclick = displayRanking; 
-            startButton.style.display = 'block';
-
             document.getElementById('checkout-button').onclick = handleCheckout;
+            // show the in-game CTA centered over the game area
+            inGameCta.style.display = 'flex';
+                        // ensure running total reflects final score
+                        runningTotal = score;
+                        if (runningTotalEl) runningTotalEl.textContent = `${runningTotal} pts`;
         }
         
         function handleCheckout() {
@@ -773,26 +762,14 @@
                  return;
             }
 
-            if (!lockedName) {
-                const allPlayCounts = loadPlayCounts();
-                if (allPlayCounts[name] && !VIP_USERS.includes(name)) {
-                    alert(`O nome "${name}" já foi utilizado por outro jogador. Por favor, escolha um nome único para o ranking!`);
-                    return; 
-                }
-                localStorage.setItem(LAST_USED_NAME_KEY, name);
-                
-            } else if (name !== lockedName) {
-                alert(`Este computador está travado para o nome: ${lockedName}. Apenas ${lockedName} pode jogar aqui.`);
-                playerNameInput.value = lockedName;
-                checkAndSetStartButton();
-                return;
-            }
-
-            if (!VIP_USERS.includes(name) && loadPlayCount(name) >= MAX_PLAYS) {
-                 alert(`Desculpe, ${name}! Você já atingiu o limite de ${MAX_PLAYS} jogadas.`);
-                 displayRanking();
-                 return;
-            }
+          // Allow multiple different names on the same device. Enforce per-name play limit (case-insensitive)
+          const normalized = normalizeNameKey(name);
+          const isVIP = VIP_USERS.map(n => n.toLowerCase()).includes(normalized);
+          if (!isVIP && loadPlayCount(name) >= MAX_PLAYS) {
+              alert(`Desculpe, ${name}! Você já atingiu o limite de ${MAX_PLAYS} jogadas.`);
+              displayRanking();
+              return;
+          }
             
             currentPlayerName = name;
             
@@ -817,9 +794,20 @@
 
   // Atualiza o ranking em tempo real
   listenRanking((players) => {
-    rankingList.innerHTML = players
-      .map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts</li>`)
-      .join("");
+        const liveList = document.getElementById("ranking");
+        if (!liveList) {
+            console.warn('No #ranking element found when updating live ranking');
+            return;
+        }
+            liveList.innerHTML = players
+                .map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`)
+                .join("");
+        // If there are remote/global players, hide the local-empty message
+        const localEmpty = document.getElementById('local-empty-message');
+        if (localEmpty) {
+            if (players && players.length > 0) localEmpty.style.display = 'none';
+            else localEmpty.style.display = '';
+        }
   });
 
   // Exemplo de adição manual (você pode adaptar)

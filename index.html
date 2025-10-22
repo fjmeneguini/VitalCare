@@ -2,11 +2,36 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8">
+    <!--
+      Página inicial / fallback
+      - Redireciona automaticamente para jogo.html (meta refresh)
+      - Se o redirecionamento falhar, esta página também oferece um botão para abrir o jogo manualmente
+    -->
     <meta http-equiv="refresh" content="0; url=./jogo.html">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VitalCare - A Triagem Caótica</title>
+    <style>
+      :root{--bg:#071026;--card:#0f1a2b;--accent:#7FFFD4;--muted:#b8c0cd}
+      html,body{height:100%;margin:0}
+      body{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#071026 0%,#071a2e 100%);font-family:Inter, Poppins, Arial, sans-serif;color:var(--accent)}
+      .card{width:min(820px,92%);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:36px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);text-align:center}
+      h1{margin:0 0 8px;font-size:32px;color:#7FFFD4}
+      p.lead{color:var(--muted);margin:8px 0 20px;font-size:16px}
+      .actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
+      .btn{background:var(--accent);color:#072033;padding:12px 20px;border-radius:12px;border:none;font-weight:700;cursor:pointer;text-decoration:none}
+      .link-muted{color:var(--muted);text-decoration:underline}
+      .note{margin-top:14px;color:#9fb9b1;font-size:13px}
+    </style>
   </head>
   <body>
-    <p>Se você não for redirecionado, <a href="./jogo.html">clique aqui para abrir o jogo</a>.</p>
+    <div class="card">
+      <h1>VitalCare — A Triagem Caótica</h1>
+      <p class="lead">Você será redirecionado para o jogo automaticamente. Se o redirecionamento falhar, use o botão abaixo.</p>
+      <div class="actions">
+        <a class="btn" href="./jogo.html">Abrir o Jogo</a>
+        <a class="btn" href="./jogo.html">Ir para o Jogo</a>
+      </div>
+      <p class="note">Se ainda não funcionar, verifique sua conexão ou abra <a class="link-muted" href="./jogo.html">jogo.html</a> diretamente.</p>
+    </div>
   </body>
 </html>

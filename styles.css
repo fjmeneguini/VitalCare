@@ -1,0 +1,113 @@
+/*
+ * styles.css
+ * ----------
+ * Folha de estilos do jogo "VitalCare - A Triagem Caótica".
+ * Comentários em português para orientar manutenção e personalização.
+ *
+ * Estrutura principal:
+ *  - Estilos globais e tipografia
+ *  - Efeito de símbolos flutuantes no fundo
+ *  - Layout principal (.game-container, #game-area)
+ *  - Estilos para alvos do jogo (.game-target)
+ *  - Overlays e ranking
+ */
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0F172A 0%, #080D1A 100%);
+    color: #E2E8F0;
+    padding: 20px;
+    position: relative;
+}
+
+/* --------------------------------- */
+/* EFEITO: SÍMBOLOS FLUTUANTES (FUNDO) */
+/* --------------------------------- */
+#background-symbols {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.1;
+}
+.symbol {
+    position: absolute;
+    color: #993BC7;
+    font-size: 80px;
+    animation: float 20s infinite linear;
+}
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+    100% { transform: translateY(-1000px) rotate(360deg); opacity: 0.1; }
+}
+
+/* --------------------------------- */
+/* LAYOUT PRINCIPAL E CONTAINER DO JOGO */
+/* --------------------------------- */
+.game-container {
+    width: 95%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(5px);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    user-select: none;
+    text-align: center;
+    display: none;
+}
+
+.logo-header { margin-bottom: 25px; }
+.logo-header img { width: 150px; height: auto; filter: drop-shadow(0 0 5px rgba(127,255,212,0.6)) drop-shadow(0 0 2px rgba(255,255,255,0.8)); opacity:0.95; }
+
+.main-title { font-size: 2.5em; font-weight:700; color:#1EC3A5; margin-bottom:25px; letter-spacing:2px; text-shadow:0 0 10px rgba(30,195,165,0.5); }
+
+h1 { font-size: clamp(1.8em, 5vw, 2.5em); color:#7FFFD4; margin-bottom: 5px; }
+
+#timer-display { font-size: clamp(3em,8vw,4em); font-weight:700; color:#ffc107; margin-bottom:15px; }
+#score-display { font-size:1.8em; margin-bottom:20px; font-weight:600; }
+
+#game-area { position:relative; height:450px; width:100%; border:3px solid #993BC7; border-radius:10px; overflow:hidden; background:rgba(0,0,0,0.4); cursor:crosshair; }
+
+.game-target { position:absolute; width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5em; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.5); transition: transform 0.1s, opacity 0.2s; }
+.game-target:active { transform: scale(0.85); }
+.critical { background-color: #1EC3A5; z-index:30; }
+.coffee { background-color: #7FFFD4; z-index:30; }
+.distraction { background-color: #dc3545; z-index:30; }
+
+.start-button-style { padding:15px 30px; font-size:1.3em; font-weight:bold; cursor:pointer; background-color:#7FFFD4; color:#1F2B5B; border:none; border-radius:50px; transition: background-color 0.3s; text-transform:uppercase; }
+.start-button-style:disabled { background-color:#6c757d !important; cursor:not-allowed; color:#e2e8f0; }
+
+#result-message { margin-top:15px; font-size:1.2em; min-height:50px; color:#ffc107; }
+
+/* RANKING E OVERLAY DE INÍCIO */
+.overlay-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
+#ranking-list { margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; width:80%; max-width:400px; text-align:left; list-style-position:inside; }
+#ranking-list ol { padding-left:0; }
+#ranking-list li { padding:5px 0; border-bottom:1px dashed rgba(255,255,255,0.1); }
+#name-form { text-align:center; padding:20px; background:rgba(255,255,255,0.05); border-radius:10px; width:80%; max-width:400px; margin-top:20px; }
+#player-name-input { width:100%; padding:12px; border-radius:8px; border:2px solid #993BC7; background:#2F3B5B; color:white; font-size:1.1em; box-sizing:border-box; transition:border-color 0.3s, background 0.3s; }
+#player-name-input:disabled { background:#1F2B5B; border-color:#1EC3A5; color:#1EC3A5; cursor:default; }
+#final-results { margin-top:20px; text-align:left; padding:15px 30px; border-radius:10px; background:rgba(0,0,0,0.2); font-size:1.1em; width:90%; margin-left:auto; margin-right:auto; border:1px solid #993BC7; }
+
+.final-cta { display:flex; justify-content:center; margin-top:18px; }
+.final-cta .start-button-style { width:60%; border-radius:12px; padding:14px 20px; font-size:1.05em; box-shadow:0 6px 18px rgba(0,0,0,0.45); text-transform:uppercase; }
+
+.in-game-cta { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:200; display:none; align-items:center; justify-content:center; pointer-events:none; }
+.in-game-cta .start-button-style { pointer-events:auto; border-radius:12px; padding:14px 26px; font-size:1.05em; box-shadow:0 10px 30px rgba(0,0,0,0.55); }
+
+#score-feedback { margin-top:12px; display:flex; align-items:center; justify-content:center; gap:18px; color:#ffc107; font-weight:700; font-size:1.1em; min-height:28px; }
+#last-hit { color:#ffffff; background:rgba(153,59,199,0.12); padding:6px 10px; border-radius:16px; display:inline-block; transform-origin:center; }
+#running-total { color:#7FFFD4; background:rgba(30,195,165,0.06); padding:6px 12px; border-radius:16px; display:inline-block; min-width:90px; text-align:center; }
+@keyframes hitPop { 0% { transform: translateY(8px) scale(0.96); opacity: 0; } 20% { transform: translateY(-6px) scale(1.06); opacity: 1; } 60% { transform: translateY(-2px) scale(1.02); opacity: 1; } 100% { transform: translateY(-14px) scale(0.98); opacity: 0; } }
+.hit-pop { animation: hitPop 900ms ease-out forwards; }
