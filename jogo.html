@@ -17,20 +17,22 @@
     <div id="background-symbols"></div>
 
     <div id="ranking-overlay" class="overlay-screen">
-        <div class="main-title" style="margin-bottom: 20px;">VITAL CARE</div>
-        <h2 style="color: #7FFFD4;">Seja o Triagista Mais Rápido!</h2>
-        <div id="ranking-list">
-            <ul id="ranking"></ul>
+        <div id="ranking-panel">
+            <div class="main-title" style="margin-bottom: 20px;">VITAL CARE</div>
+            <h2 style="color: #7FFFD4;">Seja o Triagista Mais Rápido!</h2>
+            <div id="ranking-list">
+                <ul id="ranking"></ul>
+            </div>
+            <form id="name-form">
+                <input type="text" id="player-name-input" placeholder="Seu Nome/Apelido" required>
+                <button type="submit" class="start-button-style" id="start-button-overlay" style="margin-top: 15px;">COMEÇAR PLANTÃO</button>
+            </form>
+            
+            <button id="export-ranking-button" class="start-button-style" 
+                    style="margin-top: 30px; background-color: #993BC7; color: white; display: none;">
+                EXPORTAR RANKING COMPLETO (CSV)
+            </button>
         </div>
-        <form id="name-form">
-            <input type="text" id="player-name-input" placeholder="Seu Nome/Apelido" required>
-            <button type="submit" class="start-button-style" id="start-button-overlay" style="margin-top: 15px;">COMEÇAR PLANTÃO</button>
-        </form>
-        
-        <button id="export-ranking-button" class="start-button-style" 
-                style="margin-top: 30px; background-color: #993BC7; color: white; display: none;">
-            EXPORTAR RANKING COMPLETO (CSV)
-        </button>
     </div>
 
     <div class="game-container">
@@ -347,7 +349,17 @@
             const localRanking = loadRanking();
             const remoteCached = (window.getCachedRanking && typeof window.getCachedRanking === 'function') ? window.getCachedRanking() : null;
 
-            let html = '<h3>🏆 Top 3 Triagens Rápidas</h3><ol>';
+                        let html = '<ol>';
+                        // Guia de prêmios visível no overlay inicial
+                        html += `<div id="prizes-guide" style="margin-top:10px; padding:12px; background:rgba(0,0,0,0.18); border-radius:8px; border:1px solid rgba(255,255,255,0.04);">` +
+                                        `<strong>Prêmios e Pontuação</strong>` +
+                                        `<ul style="margin:8px 0 0 16px; padding:0; list-style:disc; color:#dfe7f2">` +
+                                            `<li><strong>Exclusivo (Cordão)</strong>: 150 pontos ou mais</li>` +
+                                            `<li><strong>Médio (Chaveiro Acrílico Azul)</strong>: 110 - 149 pontos</li>` +
+                                            `<li><strong>Simples (Chaveiro MDF)</strong>: 60 - 109 pontos</li>` +
+                                            `<li><strong>Super Simples (Adesivo e Bala)</strong>: menos de 60 pontos</li>` +
+                                        `</ul>` +
+                                    `</div>`;
             if (localRanking.length === 0) {
                 html += '<li id="local-empty-message">Nenhum score registrado ainda. Seja o primeiro!</li>';
             } else {
@@ -360,10 +372,10 @@
             }
             html += '</ol>';
 
-            // Área reservada para ranking remoto (atualizada por listenRanking)
+            // Área reservada para ranking remoto (aqui mostramos o título principal e os dados remotos)
             rankingListDiv.innerHTML = html + `
                 <div id="remote-ranking" style="margin-top:12px;">
-                    <h4 style="margin:0 0 8px 0;">🌐 Ranking Global</h4>
+                    <h3 style="margin:0 0 8px 0;">🏆 Top 3 Triagens Rápidas</h3>
                     <ul id="ranking"></ul>
                 </div>
             `;
@@ -661,7 +673,9 @@
 
         function classifyPrize(finalScore) {
             if (finalScore >= 150) return 'Exclusivo (Cordão)';
-            if (finalScore >= 90) return 'Médio (Chaveiro Acrílico Azul)';
+            // Médio agora entre 110 e 149
+            if (finalScore >= 110) return 'Médio (Chaveiro Acrílico Azul)';
+            // Simples agora entre 60 e 109
             if (finalScore >= 60) return 'Simples (Chaveiro MDF)';
             return 'Super Simples (Adesivo e Bala)'; 
         }

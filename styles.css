@@ -91,17 +91,79 @@ h1 { font-size: clamp(1.8em, 5vw, 2.5em); color:#7FFFD4; margin-bottom: 5px; }
 #result-message { margin-top:15px; font-size:1.2em; min-height:50px; color:#ffc107; }
 
 /* RANKING E OVERLAY DE INÍCIO */
-.overlay-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
-#ranking-list { margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; width:80%; max-width:400px; text-align:left; list-style-position:inside; }
+#overlay-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
+#overlay-screen { /* fallback if using id selector accidentally; keep for compatibility */
+    overflow-y: auto;
+}
+
+#overlay-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:1000; }
+
+.overlay-screen { /* make overlay part of page flow so the page scrollbar is used */
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 0;
+    background: transparent; /* don't force a full-screen dim so page can scroll naturally */
+}
+
+#ranking-list { margin:20px auto 0; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; width:90%; max-width:760px; text-align:left; list-style-position:inside; display:block; }
+
+/* Prizes guide small adjustments to avoid oversized content */
+#prizes-guide { max-height: none; overflow: visible; }
+
+/* New panel that wraps the overlay content and centers it nicely */
+#ranking-panel {
+    width: min(95%, 1100px);
+    max-width: 1100px;
+    background: rgba(15,23,42,0.96);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.04);
+}
+/* Ensure padding is included in width calculations to avoid overflow */
+#ranking-panel, #ranking-panel * {
+    box-sizing: border-box;
+}
+
+/* Center the header and subtitle inside the panel */
+#ranking-panel .main-title, #ranking-panel h2 {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Center the name form and keep controls responsive */
+#name-form { display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:18px; }
+#name-form input { width:100%; max-width:420px; box-sizing:border-box; }
+#name-form .start-button-style { width:100%; max-width:420px; }
+
+/* Prizes list: stacked items (one per line) */
+/* Prizes container: use flex with wrap so items never escape the panel bounds */
+#prizes-guide ul { display:flex; flex-direction:row; flex-wrap:wrap; gap:14px; padding-left: 18px; margin:8px 0 0 0; align-items:flex-start; }
+/* Prize items: prevent mid-word breaks but allow wrapping to next line as items when needed */
+#prizes-guide ul li { white-space: nowrap; list-style-position: inside; margin-bottom: 8px; font-size: 0.98rem; overflow: hidden; text-overflow: ellipsis; }
+
+/* On wide screens, show prizes inline without wrapping so they stay in one line */
+@media (min-width: 1100px) {
+    #ranking-panel { max-width: 1200px; }
+    #prizes-guide ul { gap:28px; }
+    #prizes-guide ul li { white-space: nowrap; }
+}
 #ranking-list ol { padding-left:0; }
 #ranking-list li { padding:5px 0; border-bottom:1px dashed rgba(255,255,255,0.1); }
-#name-form { text-align:center; padding:20px; background:rgba(255,255,255,0.05); border-radius:10px; width:80%; max-width:400px; margin-top:20px; }
+#name-form { text-align:center; padding:20px; background:rgba(255,255,255,0.05); border-radius:10px; width:86%; max-width:520px; margin:20px auto 0; display:flex; flex-direction:column; align-items:center; }
 #player-name-input { width:100%; padding:12px; border-radius:8px; border:2px solid #993BC7; background:#2F3B5B; color:white; font-size:1.1em; box-sizing:border-box; transition:border-color 0.3s, background 0.3s; }
 #player-name-input:disabled { background:#1F2B5B; border-color:#1EC3A5; color:#1EC3A5; cursor:default; }
 #final-results { margin-top:20px; text-align:left; padding:15px 30px; border-radius:10px; background:rgba(0,0,0,0.2); font-size:1.1em; width:90%; margin-left:auto; margin-right:auto; border:1px solid #993BC7; }
 
 .final-cta { display:flex; justify-content:center; margin-top:18px; }
 .final-cta .start-button-style { width:60%; border-radius:12px; padding:14px 20px; font-size:1.05em; box-shadow:0 6px 18px rgba(0,0,0,0.45); text-transform:uppercase; }
+
+/* Prevent button text wrapping and center it */
+.start-button-style { white-space: nowrap; }
+#name-form .start-button-style { width: 100%; max-width:420px; min-width: 260px; padding: 16px 34px; margin-top:8px; }
 
 .in-game-cta { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:200; display:none; align-items:center; justify-content:center; pointer-events:none; }
 .in-game-cta .start-button-style { pointer-events:auto; border-radius:12px; padding:14px 26px; font-size:1.05em; box-shadow:0 10px 30px rgba(0,0,0,0.55); }
