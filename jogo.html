@@ -354,10 +354,10 @@
                         html += `<div id="prizes-guide" style="margin-top:10px; padding:12px; background:rgba(0,0,0,0.18); border-radius:8px; border:1px solid rgba(255,255,255,0.04);">` +
                                         `<strong>Prêmios e Pontuação</strong>` +
                                         `<ul style="margin:8px 0 0 16px; padding:0; list-style:disc; color:#dfe7f2">` +
-                                            `<li><strong>Exclusivo (Cordão)</strong>: 150 pontos ou mais</li>` +
-                                            `<li><strong>Médio (Chaveiro Acrílico Azul)</strong>: 110 - 149 pontos</li>` +
-                                            `<li><strong>Simples (Chaveiro MDF)</strong>: 60 - 109 pontos</li>` +
-                                            `<li><strong>Super Simples (Adesivo e Bala)</strong>: menos de 60 pontos</li>` +
+                                                            `<li><strong>Exclusivo (Cordão)</strong>: 120 pontos ou mais</li>` +
+                                                            `<li><strong>Médio (Chaveiro Acrílico Azul)</strong>: 100 - 119 pontos</li>` +
+                                                            `<li><strong>Simples (Chaveiro MDF)</strong>: 60 - 99 pontos</li>` +
+                                                            `<li><strong>Super Simples (Adesivo e Bala)</strong>: 0 - 59 pontos</li>` +
                                         `</ul>` +
                                     `</div>`;
             if (localRanking.length === 0) {
@@ -672,10 +672,10 @@
 
 
         function classifyPrize(finalScore) {
-            if (finalScore >= 150) return 'Exclusivo (Cordão)';
-            // Médio agora entre 110 e 149
-            if (finalScore >= 110) return 'Médio (Chaveiro Acrílico Azul)';
-            // Simples agora entre 60 e 109
+            if (finalScore >= 120) return 'Exclusivo (Cordão)';
+            // Acrílico agora entre 100 e 119
+            if (finalScore >= 100) return 'Médio (Chaveiro Acrílico Azul)';
+            // Simples agora entre 60 e 99
             if (finalScore >= 60) return 'Simples (Chaveiro MDF)';
             return 'Super Simples (Adesivo e Bala)'; 
         }
