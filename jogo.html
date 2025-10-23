@@ -343,8 +343,8 @@
                 }
         }
 
-    // Exibe overlay de ranking. Preenche Top 3 local e área "Ranking Global" com dados remotos quando disponíveis.
-    // Nota: Limite reduzido para Top 3 mediante solicitação do mantenedor.
+    // Exibe overlay de ranking. Preenche Top 5 local e área "Ranking Global" com dados remotos quando disponíveis.
+    // Nota: Limite ajustado para Top 5 mediante solicitação do mantenedor.
         function displayRanking() {
             const localRanking = loadRanking();
             const remoteCached = (window.getCachedRanking && typeof window.getCachedRanking === 'function') ? window.getCachedRanking() : null;
@@ -363,7 +363,7 @@
             if (localRanking.length === 0) {
                 html += '<li id="local-empty-message">Nenhum score registrado ainda. Seja o primeiro!</li>';
             } else {
-                localRanking.slice(0, 3).forEach((entry) => {
+                localRanking.slice(0, 5).forEach((entry) => {
                     const status = entry.redeemed ? ' (✅ Resgatado)' : '';
                     html += `
                         <li><strong>${entry.name}</strong>: ${entry.score} pts ${status}</li>
@@ -375,7 +375,7 @@
             // Área reservada para ranking remoto (aqui mostramos o título principal e os dados remotos)
             rankingListDiv.innerHTML = html + `
                 <div id="remote-ranking" style="margin-top:12px;">
-                    <h3 style="margin:0 0 8px 0;">🏆 Top 3 Triagens Rápidas</h3>
+                    <h3 style="margin:0 0 8px 0;">🏆 Top 5 Triagens Rápidas</h3>
                     <ul id="ranking"></ul>
                 </div>
             `;
@@ -385,8 +385,8 @@
                 if (remoteCached && remoteCached.length > 0) {
                     const remoteListEl = document.getElementById('ranking');
                     if (remoteListEl) {
-                        // Mostrar apenas os top 3 do ranking remoto para manter consistência com o Top local
-                        remoteListEl.innerHTML = (remoteCached || []).slice(0, 3).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join('');
+                        // Mostrar apenas os top 5 do ranking remoto para manter consistência com o Top local
+                        remoteListEl.innerHTML = (remoteCached || []).slice(0, 5).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join('');
                         const localEmpty = document.getElementById('local-empty-message');
                         if (localEmpty) localEmpty.style.display = 'none';
                     }
@@ -400,8 +400,8 @@
                     window.listenRanking((players) => {
                         const liveList = document.getElementById("ranking");
                         if (!liveList) return;
-                        // Mostrar apenas top 3 do ranking remoto
-                        liveList.innerHTML = (players || []).slice(0, 3).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
+                        // Mostrar apenas top 5 do ranking remoto
+                        liveList.innerHTML = (players || []).slice(0, 5).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
                         const localEmpty = document.getElementById('local-empty-message');
                         if (localEmpty) {
                             if (players && players.length > 0) localEmpty.style.display = 'none';
@@ -422,8 +422,8 @@
                     window.listenRanking((players) => {
                         const liveList = document.getElementById("ranking");
                         if (!liveList) return;
-                                        // Mostrar apenas top 3 do ranking remoto (anexado após poll)
-                                        liveList.innerHTML = (players || []).slice(0, 3).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
+                                        // Mostrar apenas top 5 do ranking remoto (anexado após poll)
+                                        liveList.innerHTML = (players || []).slice(0, 5).map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`).join("");
                                         const localEmpty = document.getElementById('local-empty-message');
                                         if (localEmpty) {
                                             if (players && players.length > 0) localEmpty.style.display = 'none';
@@ -817,8 +817,8 @@
             console.warn('No #ranking element found when updating live ranking');
             return;
         }
-            // Mostrar apenas top 3 no render em módulo também
-            liveList.innerHTML = (players || []).slice(0, 3)
+            // Mostrar apenas top 5 no render em módulo também
+            liveList.innerHTML = (players || []).slice(0, 5)
                 .map((p, i) => `<li>${i + 1}. ${p.name} — ${p.score} pts${p.count ? ` (${p.count} jogadas)` : ''}</li>`)
                 .join("");
         // If there are remote/global players, hide the local-empty message

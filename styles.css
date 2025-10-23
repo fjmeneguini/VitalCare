@@ -141,9 +141,10 @@ h1 { font-size: clamp(1.8em, 5vw, 2.5em); color:#7FFFD4; margin-bottom: 5px; }
 
 /* Prizes list: stacked items (one per line) */
 /* Prizes container: use flex with wrap so items never escape the panel bounds */
-#prizes-guide ul { display:flex; flex-direction:row; flex-wrap:wrap; gap:14px; padding-left: 18px; margin:8px 0 0 0; align-items:flex-start; }
+#prizes-guide ul { display:flex; flex-direction:row; flex-wrap:wrap; gap:10px; padding-left: 16px; margin:6px 0 0 0; align-items:flex-start; }
 /* Prize items: prevent mid-word breaks but allow wrapping to next line as items when needed */
-#prizes-guide ul li { white-space: nowrap; list-style-position: inside; margin-bottom: 8px; font-size: 0.98rem; overflow: hidden; text-overflow: ellipsis; }
+/* Compact vertical spacing for prize items only */
+#prizes-guide ul li { white-space: nowrap; list-style-position: inside; margin-bottom: 4px; font-size: 0.95rem; line-height:1.04; overflow: hidden; text-overflow: ellipsis; }
 
 /* On wide screens, show prizes inline without wrapping so they stay in one line */
 @media (min-width: 1100px) {
